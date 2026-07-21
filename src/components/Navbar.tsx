@@ -2,7 +2,15 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X } from 'lucide-react';
 import { useActiveSection } from '../hooks/useActiveSection';
-import { navItems } from '../utils/data';
+const navItems = [
+  { label: 'Home', href: '#home' },
+  { label: 'About', href: '#about' },
+  { label: 'Experience', href: '#experience' },
+  { label: 'Skills', href: '#skills' },
+  { label: 'Projects', href: '#projects' },
+  { label: 'Blog', href: '#blog' },
+  { label: 'Contact', href: '#contact' },
+];
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
@@ -83,12 +91,12 @@ export default function Navbar() {
           </div>
 
           {/* CTA */}
-          <button
-            onClick={() => handleNav('#contact')}
+          <a
+            href="mailto:humphreylionelgevero@gmail.com"
             className="ml-2 hidden md:flex items-center gap-1.5 px-4 py-1.5 rounded-xl bg-primary text-white text-sm font-semibold hover:bg-primary-light transition-all duration-200 shadow-lg shadow-primary/20"
           >
             Hire Me
-          </button>
+          </a>
 
           {/* Mobile menu toggle */}
           <button
@@ -120,12 +128,12 @@ export default function Navbar() {
               </button>
             ))}
             <div className="mt-2 pt-2 border-t border-white/8">
-              <button
-                onClick={() => handleNav('#contact')}
-                className="block w-full text-center px-4 py-2.5 rounded-xl bg-primary text-white text-sm font-semibold"
+              <a
+                href="mailto:humphreylionelgevero@gmail.com"
+                className="block text-center px-4 py-2.5 rounded-xl bg-primary text-white text-sm font-semibold"
               >
                 Hire Me
-              </button>
+              </a>
             </div>
           </motion.div>
         )}

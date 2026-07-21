@@ -1,48 +1,85 @@
+import { useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowRight, MapPin, Globe, Briefcase, Plane } from 'lucide-react';
+import { ArrowRight, MapPin, Globe, Briefcase, Plane, Download } from 'lucide-react';
 import { fadeUp, staggerContainer } from '../utils/animations';
-import TypingSQL from '../components/TypingSQL';
-
-const techIcons = ['⚛️', '🐍', '📊', '⚡', '🗄️', '🎯', '🔷', '📐'];
+import { useTypingEffect } from '../hooks/useTypingEffect';
 
 const badges = [
   { icon: MapPin, text: 'Based in Philippines', color: '#22D3EE' },
   { icon: Globe, text: 'Open to Remote', color: '#3B82F6' },
-  { icon: Briefcase, text: 'US, Japan & Canada Opportunities', color: '#A855F7' },
+  { icon: Briefcase, text: 'US Opportunities', color: '#A855F7' },
   { icon: Plane, text: 'Open to Relocation', color: '#6366F1' },
 ];
 
+const ROLES = [
+  'Data Analyst',
+  'Software Developer',
+  'Project Manager',
+  'Founder & CEO',
+  'Full-Stack Engineer',
+];
+
+function StarField() {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  useEffect(() => {
+    const canvas = canvasRef.current!;
+    const ctx = canvas.getContext('2d')!;
+    let raf: number;
+
+    const resize = () => {
+      canvas.width = canvas.offsetWidth;
+      canvas.height = canvas.offsetHeight;
+    };
+    resize();
+    window.addEventListener('resize', resize);
+
+    const stars = Array.from({ length: 120 }, () => ({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      r: Math.random() * 1.4 + 0.2,
+      speed: Math.random() * 0.25 + 0.05,
+      alpha: Math.random(),
+      dalpha: (Math.random() - 0.5) * 0.015,
+    }));
+
+    const draw = () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      stars.forEach((s) => {
+        s.alpha = Math.max(0.05, Math.min(1, s.alpha + s.dalpha));
+        if (s.alpha <= 0.05 || s.alpha >= 1) s.dalpha *= -1;
+        s.y -= s.speed;
+        if (s.y < 0) { s.y = canvas.height; s.x = Math.random() * canvas.width; }
+        ctx.save();
+        ctx.globalAlpha = s.alpha * 0.7;
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+        ctx.fillStyle = '#fff';
+        ctx.shadowColor = '#3B82F6';
+        ctx.shadowBlur = 4;
+        ctx.fill();
+        ctx.restore();
+      });
+      raf = requestAnimationFrame(draw);
+    };
+    raf = requestAnimationFrame(draw);
+
+    return () => { cancelAnimationFrame(raf); window.removeEventListener('resize', resize); };
+  }, []);
+
+  return <canvas ref={canvasRef} className="absolute inset-0 w-full h-full pointer-events-none" />;
+}
+
 export default function Hero() {
+  const typed = useTypingEffect(ROLES, 75, 35, 2200);
+
   return (
     <section
       id="home"
-      className="relative min-h-screen flex flex-col items-center justify-center pt-20 pb-24 px-4 overflow-hidden"
+      className="relative min-h-screen flex flex-col items-center justify-center pt-20 pb-16 px-4 overflow-hidden"
     >
-      {/* Floating tech icons */}
-      {techIcons.map((icon, i) => (
-        <motion.div
-          key={i}
-          className="absolute text-2xl select-none pointer-events-none"
-          style={{
-            top: `${10 + ((i * 11) % 75)}%`,
-            left: `${5 + ((i * 13) % 85)}%`,
-          }}
-          animate={{
-            y: [0, -15, 0, 10, 0],
-            x: [0, 8, -5, 10, 0],
-            rotate: [0, 10, -5, 8, 0],
-            opacity: [0.15, 0.25, 0.15],
-          }}
-          transition={{
-            duration: 6 + i * 1.2,
-            delay: i * 0.4,
-            repeat: Infinity,
-            ease: 'easeInOut',
-          }}
-        >
-          {icon}
-        </motion.div>
-      ))}
+      {/* Star field */}
+      <StarField />
 
       <motion.div
         variants={staggerContainer}
@@ -65,17 +102,10 @@ export default function Hero() {
             animate={{ y: [0, -8, 0] }}
             transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
           >
-            {/* Glow ring */}
             <div className="absolute inset-0 rounded-full bg-gradient-to-r from-primary via-purple to-cyan opacity-40 blur-xl scale-110" />
-            <div className="relative w-24 h-24 rounded-full overflow-hidden border-2 border-white/10 shadow-2xl shadow-primary/30">
-              <img
-                src={`${import.meta.env.BASE_URL}profile-photo.jpg`}
-                alt="Profile photo"
-                className="w-full h-full object-cover"
-              />
+            <div className="relative w-24 h-24 rounded-full bg-gradient-to-br from-primary via-indigo to-purple flex items-center justify-center text-3xl font-bold text-white border-2 border-white/10 shadow-2xl shadow-primary/30">
+              HG
             </div>
-
-            {/* Status dot */}
             <div className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-bg border-2 border-emerald-400 flex items-center justify-center">
               <div className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" />
             </div>
@@ -93,18 +123,13 @@ export default function Hero() {
           <span className="gradient-text">Lionel Gevero</span>
         </motion.h1>
 
-        {/* Typing SQL queries */}
-        <motion.div variants={fadeUp} className="flex justify-center mb-6">
-          <TypingSQL />
+        {/* Typing effect */}
+        <motion.div variants={fadeUp} className="h-10 flex items-center justify-center mb-6">
+          <span className="text-lg sm:text-2xl font-semibold text-white/70 tracking-wide">
+            {typed}
+            <span className="inline-block w-0.5 h-6 bg-primary ml-1 animate-pulse align-middle" />
+          </span>
         </motion.div>
-
-        {/* Roles */}
-        <motion.p
-          variants={fadeUp}
-          className="text-lg sm:text-xl text-white/40 font-medium tracking-widest uppercase mb-6"
-        >
-          Data Analyst &nbsp;·&nbsp; Software Engineer &nbsp;·&nbsp; Project Manager
-        </motion.p>
 
         {/* Description */}
         <motion.p
@@ -118,10 +143,7 @@ export default function Hero() {
         </motion.p>
 
         {/* CTA buttons */}
-        <motion.div
-          variants={fadeUp}
-          className="flex flex-wrap justify-center gap-4 mb-12"
-        >
+        <motion.div variants={fadeUp} className="flex flex-wrap justify-center gap-4 mb-12">
           <button
             onClick={() => document.querySelector('#projects')?.scrollIntoView({ behavior: 'smooth' })}
             className="group flex items-center gap-2 px-7 py-3.5 rounded-xl bg-primary text-white font-semibold text-sm shadow-xl shadow-primary/25 hover:bg-primary-light hover:shadow-primary/40 hover:-translate-y-0.5 transition-all duration-200"
@@ -135,13 +157,18 @@ export default function Hero() {
           >
             Contact Me
           </button>
+          <a
+            href="/portfolio/resume.pdf"
+            download
+            className="flex items-center gap-2 px-7 py-3.5 rounded-xl glass text-emerald-400 font-semibold text-sm border border-emerald-400/20 hover:border-emerald-400/50 hover:bg-emerald-400/5 hover:-translate-y-0.5 transition-all duration-200"
+          >
+            <Download size={16} />
+            Resume
+          </a>
         </motion.div>
 
         {/* Status badges */}
-        <motion.div
-          variants={fadeUp}
-          className="flex flex-wrap justify-center gap-3"
-        >
+        <motion.div variants={fadeUp} className="flex flex-wrap justify-center gap-3">
           {badges.map((badge) => (
             <div
               key={badge.text}
@@ -159,7 +186,7 @@ export default function Hero() {
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 2, duration: 1 }}
-        className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-2"
+        className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2"
       >
         <motion.div
           animate={{ y: [0, 8, 0] }}
