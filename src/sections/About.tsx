@@ -69,9 +69,6 @@ export default function About() {
                 Throughout my career, I have worked closely with clients, managed software projects, analyzed business requirements, and developed modern web applications that solve practical business problems.
               </p>
               <p className="text-white/55 text-[15px] leading-relaxed">
-                As the <span className="text-white/80 font-medium">Founder and CEO of CoreTek Digital Solutions</span>, I lead projects from planning to deployment while collaborating with clients and developers to deliver scalable digital products.
-              </p>
-              <p className="text-white/55 text-[15px] leading-relaxed">
                 I continuously improve my skills in software engineering, data analytics, cloud technologies, automation, and artificial intelligence to stay ahead in the ever-evolving technology industry.
               </p>
             </motion.div>
