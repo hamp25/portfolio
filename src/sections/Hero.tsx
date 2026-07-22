@@ -124,11 +124,11 @@ function SqlTerminal() {
           humphrey.sql — query_engine v2.0
         </span>
       </div>
-      {/* Terminal body */}
-      <div className="px-3 sm:px-4 py-3">
+      {/* Terminal body — fixed height, never shifts layout */}
+      <div className="px-3 sm:px-4 py-3 overflow-hidden" style={{height:'52px'}}>
         <div className="flex items-start gap-2 font-mono text-[11px] sm:text-sm leading-relaxed">
           <span className="text-[#C084FC] flex-shrink-0 mt-0.5 font-bold">❯</span>
-          <span className="break-all flex-1 text-left">
+          <span className="flex-1 text-left overflow-hidden" style={{display:'-webkit-box', WebkitLineClamp:2, WebkitBoxOrient:'vertical', overflow:'hidden'}}>
             {hl(text)}
             <span className="inline-block w-[2px] h-[12px] sm:h-[14px] align-middle ml-0.5 rounded-sm"
               style={{background:'#60A5FA', opacity:blink?1:0, transition:'opacity 0.08s'}}/>
